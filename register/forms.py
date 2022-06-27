@@ -18,9 +18,7 @@ class DateInput(forms.DateInput):
     input_type = 'date'
 
 class PatientForm(UserCreationForm):
-    
-    dob = forms.DateField(input_formats=settings.DATE_INPUT_FORMATS, widget=DateInput)
-    
+        
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['password1'].help_text = "8 characters long. Letter, Numbers and Special Characters"
@@ -65,6 +63,9 @@ class PatientForm(UserCreationForm):
     class Meta:
         model = Patient
         fields = ["first_name", "last_name", "gender", "dob", "username", "email", "password1", "password2"]
+        widgets = {
+            'dob': DateInput(),
+        }
 
 
 

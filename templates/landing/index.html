@@ -57,7 +57,7 @@
                   {% elif user.account_type == "r" %}
                   <a href="{% url 'radiologist:dashboard' %}">
                   {% elif user.account_type == 'a' %}
-                  <a href="{% url 'admin:index' %}">
+                  <a href="{% url 'administrator:dashboard' %}">
                   {% endif %}
 
                     <button type="button" class="btn btn-success rounded btn" style="padding: 10px 30px;"> Dashboard </button>
