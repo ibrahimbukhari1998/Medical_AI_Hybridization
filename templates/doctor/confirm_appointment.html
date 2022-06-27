@@ -1,0 +1,168 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block title %}
+
+{% if appoint.status == 'pending' %}
+     Confirm Appointment 
+{% else %}
+    Update Appointment 
+{% endif %}
+
+{% endblock %} 
+
+
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+
+
+
+{% block content %}
+
+<div class="py-4">
+    <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
+        <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+            <li class="breadcrumb-item">
+                <a href="{% url 'doctor:dashboard' %}">
+                    <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                </a>
+            </li>
+
+            <li class="breadcrumb-item"><a href="{% url 'doctor:appointment' %}">Appointments</a></li>
+            {% if appoint.status == 'pending' %}
+            <li class="breadcrumb-item active" aria-current="page">Confirm</li>
+            {% else %}
+            <li class="breadcrumb-item active" aria-current="page">Update</li>
+            {% endif %}
+            
+        </ol>
+    </nav>
+    <div class="d-flex justify-content-between w-100 flex-wrap">
+        <div class="mb-3 mb-lg-0">
+
+            {% if appoint.status == 'pending' %}
+            <h1 class="h4">Confirm Appointment</h1>
+            {% else %}
+            <h1 class="h4">Update Appointment</h1>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+
+    <div class="col-1"></div>
+    <div class="col">
+        <div class="card border-0 shadow mb-4">
+
+            <!-- <div class="card-header">Description</div> -->
+            <div class="card-body">
+
+
+                <form action="" method="post">
+                    <div class="accordion" id="accordionPanelsStayOpenExample">
+
+                        <!-- PATIENT INFO -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                                PATIENT INFO
+                              </button>
+                            </h2>
+                            <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                              <div class="accordion-body">
+                                <ul style="color: black;">
+                                      <li><strong>Patient's Name:&emsp;&emsp;</strong>{{ appoint.patient.get_full_name }}</li><br>
+                                      <li><strong>Patient's Age:&emsp;&emsp;</strong>{{ appoint.patient.dob }}</li><br>       <!-- MUST ADD AGE ATTRIBUTE TO MODEL AND CHANGE HERE -->
+                                      <li><strong>Patient's Gender:&emsp;&emsp;</strong>{{ appoint.patient.get_gender_display }}</li><br>
+                                </ul>
+                              </div>
+                            </div>
+                        </div>
+
+
+                        <!-- DETAILS -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
+                                    DETAILS
+                                </button>
+                              </h2>
+                              <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingTwo">
+                                <div class="accordion-body">
+                                  <ul style="color: black;">
+                                    <li><strong>Appointment Type:&emsp;&emsp;</strong>{{ appoint.get_types_display }}</li><br>
+                                    <li><strong>Appointment Status:&emsp;&emsp;</strong>{{ appoint.get_status_display }}</li><br>
+                                  </ul>
+                                </div>
+                              </div>
+                        </div>
+
+
+                        <!-- DATE AND TIME -->
+                          <div class="accordion-item">
+                              <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+                                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="true" aria-controls="panelsStayOpen-collapseThree">
+                                      DATE AND TIME
+                                  </button>
+                                </h2>
+                                <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingThree">
+                                  <div class="accordion-body">
+                                    {% csrf_token %}
+                                    {{ form|crispy }}
+                                  </div>
+                                </div>
+                          </div>
+
+
+                            <!-- DESCRIPTION -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="panelsStayOpen-headingFour">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseFour" aria-expanded="true" aria-controls="panelsStayOpen-collapseFour">
+                                        DESCRIPTION
+                                    </button>
+                                </h2>
+                            <div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingFour">
+                                <div class="accordion-body">
+                                    <ul style="color: black;">
+                                        <li>{{ appoint.description }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div><br>
+
+                    <div class="container-fluid">
+                        {% if appoint.status == 'pending' %}
+                        <button type="submit" class="btn btn-warning">Confirm Appointment</button>
+                        <a href="{% url 'doctor:cancel' appoint.id %}"><button class="btn btn-danger">Cancel Appointment</button></a>
+                        {% elif appoint.status == 'confirmed' %}
+                        <button type="submit" class="btn btn-info">Update Appointment</button>
+                        <a href="{% url 'doctor:cancel' appoint.id %}"><button class="btn btn-danger">Cancel Appointment</button></a>
+                        {% endif %}
+                    </div>
+                </form>
+
+
+            </div>
+
+
+        </div>
+    </div>
+    <div class="col-1"></div>
+
+</div>
+
+
+{% endblock content %}
+
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

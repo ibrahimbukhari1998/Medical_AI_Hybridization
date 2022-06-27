@@ -1,0 +1,154 @@
+{% extends "layouts/mdb_layout.html" %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %} 
+
+{% if user.is_authenticated %}
+Logout
+{% else %}
+Login 
+{% endif %}
+
+{% endblock %} 
+
+
+{% block style %}
+<link href="http://fonts.cdnfonts.com/css/gigantic-fs" rel="stylesheet">
+                
+
+<style>
+
+    h1{font-family: 'Gigantic FS', sans-serif;}
+    .divider:after,
+    .divider:before{
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #eee;
+    }
+
+    body{background-color: whitesmoke;}
+
+    #rightform{
+        background-color: white;
+        border-radius: 20px !important;
+    }
+
+    .hovercolor:focus{
+        background-color: rgba(240, 255, 240, 0.363);
+        color: black;
+    }
+
+    label{
+      color: darkblue !important;
+    }
+    input{
+      border-color: darkblue !important;
+      border-width: 1px !important;
+    }
+</style>
+
+{% endblock style %}
+
+
+{% block content %}
+<nav class="navbar shadow-0" style="background: rgba(255, 255, 255, 0);">
+    <div class="container-fluid">
+      <a class="navbar-brand" style="padding: 10px 40px;" href="{% url 'core:landing' %}"><img src="{% static 'myassets/image/logo.png' %}" width="148" height="50"></a>
+    </div>
+  </nav>
+
+
+{% if user.is_authenticated %}
+
+<!-- If user is already loged in then this shows a logout link -->
+<section class="">
+
+    <div class="container py-5 h-100">
+
+      <div class="row d-flex align-items-center justify-content-center h-100">
+        <div class="col-md-8 col-lg-7 col-xl-5">
+          <img src="{% static 'myassets/image/register.svg' %}"
+            class="img-fluid" alt="Phone image">
+
+        </div>
+
+        <div class="col-md-7 col-lg-5 col-xl-6 offset-xl-1 rounded-3 shadow-3-strong" id="rightform">
+
+            <br>
+
+            <div class="text-center">
+              <h1>You are Logged in</h1>
+              <h2><a href="{% url 'logout' %}">Logout</a></h2>
+            </div>
+
+        </div>
+      </div>
+    </div>
+</section>
+
+
+{% else %}
+
+<!-- If user is not logged in then this shows the login form  -->
+<section class="">
+
+    <div class="container py-5 h-100">
+
+      <div class="row d-flex align-items-center justify-content-center h-100">
+        <div class="col-md-8 col-lg-7 col-xl-5">
+          <img src="{% static 'myassets/image/register.svg' %}"
+            class="img-fluid" alt="Phone image">
+
+        </div>
+
+        <div class="col-md-7 col-lg-5 col-xl-6 offset-xl-1 rounded-3 shadow-3-strong" id="rightform">
+
+            <br>
+
+            <div class="text-center">
+              <h1>Login</h1>
+            </div>
+
+            <form action="" method="post">
+              {% csrf_token %}
+
+              {% if form.errors %}
+              <span style="color: red;">Invalid Username or Password</span><br>
+              {% endif %}
+
+              
+              <label class="form-label" for="username">Email</label>
+              <input type="text" name="username" id="username" class=" form-control form-control-lg" />
+              <br>
+
+              <label class="form-label" for="password">Password</label>
+              <input type="password" name="password" id="password" class="form-control form-control-lg" />
+                
+
+              {% for message in messages %}
+              <br>
+              <p id="messages">{{message}}</p>
+              {% endfor %}
+
+
+              <br>
+              <button type="submit" class="btn-lg btn-primary"> Login </button>
+            </form>
+            
+            
+            <p style="padding-top: 2%;">Don't have an account? <a href="{% url 'register:register' %}">Create now</a></p>
+
+        </div>
+      </div>
+    </div>
+</section>
+
+
+{% endif %}
+
+
+
+{% endblock content %}

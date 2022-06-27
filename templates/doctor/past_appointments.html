@@ -1,0 +1,376 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+
+{% block title %} Appointments {% endblock %} 
+
+
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+
+
+
+{% block content %}
+
+  <div class="py-4">
+      <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
+          <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+              <li class="breadcrumb-item">
+                  <a href="{% url 'doctor:dashboard' %}">
+                      <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                  </a>
+              </li>
+
+              <li class="breadcrumb-item active" aria-current="page">Appointments</li>
+          </ol>
+      </nav>
+      <div class="d-flex justify-content-between w-100 flex-wrap">
+          <div class="mb-3 mb-lg-0">
+
+            
+              <h1 class="h4">Appointments </h1>
+          </div>
+      </div>
+  </div>
+
+  <div class="card border-0 shadow mb-4">
+
+    <div class="card-body">
+
+        <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+              <button class="nav-link btn-info active" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Completed</button>
+              <button class="nav-link btn-danger" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#cancelled" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Cancelled</button>
+              <button class="nav-link" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab" aria-controls="nav-home" aria-selected="true">All</button>
+            </div>
+          </nav>
+          <div class="tab-content" id="nav-tabContent">
+
+
+            <!-- ALL APPOINTMENTS STARTS HERE -->
+            <div class="tab-pane fade" id="all" role="tabpanel" aria-labelledby="nav-home-tab">
+
+                <br>
+                <div class="table-responsive">
+                    <table class="table table-centered table-nowrap mb-0 rounded">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="border-0 rounded-start">Patient</th>
+                                <th class="border-0">Date</th>
+                                <th class="border-0">Time</th>
+                                <th class="border-0">Type</th>
+                                <th class="border-0">Current Status</th>
+                                <th class="border-0">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            {% if list %}
+
+                                {% for appoint in list %}
+
+                                        <!-- Item -->
+                                        <tr>
+                                            <td><a href="{% url 'doctor:patient_detail' appoint.patient.id%}" class="text-primary fw-bold">
+                                                    <button class="btn btn-outline-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="Gender: {{ appoint.patient.get_gender_display }} || Age: {{ appoint.patient.get_age }}">
+                                                        {{ appoint.patient.get_full_name }}
+                                                    </button>
+                                                </a>
+                                            </td>
+                                            
+                                            <td class="fw-bold">
+                                                {{appoint.date}}
+                                            </td>
+                                            <td>
+
+                                                {% if appoint.status == 'pending' %}
+                                                <span style="color: red;"> CONFIRMATION PENDING</span>
+                                                {% else %}
+                                                {{appoint.start_time}}
+                                                {% endif %}
+
+                                            </td>
+                                            <td>
+                                                {{appoint.get_types_display}}
+                                            </td>
+                                            <td>
+                                                {{appoint.get_status_display}}
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#appoint{{appoint.id}}">View</button>
+                                                {% if appoint.status == 'confirmed' %}
+                                                <a href="{% url 'doctor:start' appoint.id %}"><button class="btn btn-success">Start</button></a>
+                                                <a href="{% url 'doctor:cancel' appoint.id %}"><button class="btn btn-danger">Cancel</button></a>
+                                                {% elif appoint.status == 'pending' %}
+                                                <a href="{% url 'doctor:update' appoint.id %}"><button class="btn btn-secondary">Confirm</button></a>
+                                                <a href="{% url 'doctor:cancel' appoint.id %}"><button class="btn btn-danger">Cancel</button></a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <!-- End of Item -->
+
+                                {% endfor %}
+
+                            {% endif %}
+
+
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <!-- ENDS HERE -->
+
+            <!-- COMPLETED APPOINTMENTS STARTS HERE  -->
+            <div class="tab-pane fade show active" id="completed" role="tabpanel" aria-labelledby="nav-contact-tab">
+
+                <br>
+                <div class="table-responsive">
+                    <table class="table table-centered table-nowrap mb-0 rounded">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="border-0 rounded-start">Patient</th>
+                                <th class="border-0">Date</th>
+                                <th class="border-0">Time</th>
+                                <th class="border-0">Type</th>
+                                <th class="border-0">Current Status</th>
+                                <th class="border-0">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        
+                            {% if list %}
+        
+                                {% for appoint in list %}
+                                    {% if appoint.doctor.email == user.email %}
+                                    {% if appoint.status == 'completed' %}
+        
+                                        <!-- Item -->
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'doctor:patient_detail' appoint.patient.id%}" class="text-primary fw-bold">
+                                                    <button class="btn btn-outline-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="Gender: {{ appoint.patient.get_gender_display }} || Age: {{ appoint.patient.get_age }}">
+                                                        {{ appoint.patient.get_full_name }}
+                                                    </button>
+                                                </a>
+                                            </td>
+                                            <td class="fw-bold">
+                                                {{appoint.date}}
+                                            </td>
+                                            <td>
+                                                {{appoint.start_time}}
+                                            </td>
+                                            <td>
+                                                {{appoint.get_types_display}}
+                                            </td>
+                                            <td>
+                                                {{appoint.get_status_display}}
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#appoint{{appoint.id}}">View</button>
+                                            </td>
+                                        </tr>
+                                        <!-- End of Item -->
+                                    
+                                    {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+        
+                            {% endif %}
+        
+        
+        
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+            <!-- ENDS HERE -->
+
+
+            <!-- CANCELLED APPOINTMENTS STARTS HERE -->
+            <div class="tab-pane fade" id="cancelled" role="tabpanel" aria-labelledby="nav-contact-tab">
+
+                <br>
+                <div class="table-responsive">
+                    <table class="table table-centered table-nowrap mb-0 rounded">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="border-0 rounded-start">Patient</th>
+                                <th class="border-0">Date</th>
+                                <th class="border-0">Time</th>
+                                <th class="border-0">Type</th>
+                                <th class="border-0">Current Status</th>
+                                <th class="border-0">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        
+                            {% if list %}
+        
+                                {% for appoint in list %}
+                                    {% if appoint.doctor.email == user.email %}
+                                    {% if appoint.status == 'cancelled' %}
+        
+                                        <!-- Item -->
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'doctor:patient_detail' appoint.patient.id%}" class="text-primary fw-bold">
+                                                    <button class="btn btn-outline-primary" data-bs-toggle="tooltip" data-bs-placement="left" title="Gender: {{ appoint.patient.get_gender_display }} || Age: {{ appoint.patient.get_age }}">
+                                                        {{ appoint.patient.get_full_name }}
+                                                    </button>
+                                                </a>
+                                            </td>
+                                            <td class="fw-bold">
+                                                {{appoint.date}}
+                                            </td>
+                                            <td>
+                                                {{appoint.start_time}}
+                                            </td>
+                                            <td>
+                                                {{appoint.get_types_display}}
+                                            </td>
+                                            <td>
+                                                {{appoint.get_status_display}}
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#appoint{{appoint.id}}">View</button>
+                                            </td>
+                                        </tr>
+                                        <!-- End of Item -->
+                                    
+                                    {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+        
+                            {% endif %}
+        
+        
+        
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <!-- ENDS HERE -->
+
+          </div>
+    </div>
+
+  
+  </div>
+
+
+
+
+                <!-- Appointment Modal -->
+                {% for appoint in list %}
+                <div class="modal fade" id="appoint{{appoint.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Appointment Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+    
+                            <div class="accordion" id="accordionPanelsStayOpenExample">
+
+                                <!-- PATIENT INFO -->
+                                  <div class="accordion-item">
+                                    <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                                        PATIENT INFO
+                                      </button>
+                                    </h2>
+                                    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                                      <div class="accordion-body">
+                                        <ul style="color: black;">
+                                              <li><strong>Patient's Name:&emsp;&emsp;</strong>{{ appoint.patient.get_full_name }}</li><br>
+                                              <li><strong>Patient's Age:&emsp;&emsp;</strong>{{ appoint.patient.get_age }}</li><br>
+                                              <li><strong>Patient's Gender:&emsp;&emsp;</strong>{{ appoint.patient.get_gender_display }}</li><br>
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  </div>
+              
+              
+                                  <!-- DETAILS -->
+                                  <div class="accordion-item">
+                                    <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
+                                            DETAILS
+                                        </button>
+                                      </h2>
+                                      <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingTwo">
+                                        <div class="accordion-body">
+                                          <ul style="color: black;">
+                                            <li><strong>Appointment Type:&emsp;&emsp;</strong>{{ appoint.get_types_display }}</li><br>
+                                            <li><strong>Appointment Status:&emsp;&emsp;</strong>{{ appoint.get_status_display }}</li><br>
+                                          </ul>
+                                        </div>
+                                      </div>
+                                </div>
+              
+              
+                                <!-- DATE AND TIME -->
+                                  <div class="accordion-item">
+                                      <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+                                          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="true" aria-controls="panelsStayOpen-collapseThree">
+                                              DATE AND TIME
+                                          </button>
+                                        </h2>
+                                        <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingThree">
+                                          <div class="accordion-body">
+                                            <ul style="color: black;">
+                                                  <li><strong>Date:&emsp;&emsp;</strong>{{ appoint.date }}</li><br>
+                                                  <li><strong>Starting Time:&emsp;&emsp;</strong>
+                                                    {% if appoint.status == 'pending' %}
+                                                    <span style="color: red;">CONFIRMATION PENDING</span>
+                                                    {% else %}
+                                                    {{ appoint.start_time }}
+                                                    {% endif %}
+                                                  </li><br>
+                                            </ul>
+                                          </div>
+                                        </div>
+                                  </div>
+              
+              
+                                  <!-- DESCRIPTION -->
+                                  <div class="accordion-item">
+                                      <h2 class="accordion-header" id="panelsStayOpen-headingFour">
+                                          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseFour" aria-expanded="true" aria-controls="panelsStayOpen-collapseFour">
+                                              DESCRIPTION
+                                          </button>
+                                        </h2>
+                                        <div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingFour">
+                                          <div class="accordion-body">
+                                            <ul style="color: black;">
+                                                  <li>{{ appoint.description }}</li>
+                                            </ul>
+                                          </div>
+                                        </div>
+                                  </div>
+                                  
+                              </div><br>
+    
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+{% endblock content %}
+
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

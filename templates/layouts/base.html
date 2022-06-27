@@ -1,0 +1,59 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head> 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- Primary Meta Tags -->
+
+<title>
+     {% block title %}{% endblock %} | {{ user.first_name }} {{ user.last_name }}
+</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="canonical" href="https://appseed.us/admin-dashboards/django-dashboard-volt">
+
+<!-- Favicon -->
+<link rel="icon" href="{% static 'myassets/image/favicon.png' %}">
+<!-- <meta name="msapplication-TileColor" content="#ffffff">
+<meta name="theme-color" content="#ffffff"> -->
+
+<link type="text/css" href="/static/assets/vendor/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+
+<link type="text/css" href="/static/assets/vendor/notyf/notyf.min.css" rel="stylesheet">
+<link type="text/css" href="/static/assets/css/volt.css" rel="stylesheet">
+
+<script src="https://kit.fontawesome.com/2cc019ef23.js" crossorigin="anonymous"></script>
+
+<!-- Specific Page JS goes HERE  -->    
+{% block stylesheets %}{% endblock stylesheets %}
+
+</head>
+<body>
+
+    {% if type == 'd'  %}
+    {% include 'includes/sidebars/doctor_sidebar.html' %}
+    {% elif type == 'p'  %}
+    {% include 'includes/sidebars/patient_sidebar.html' %}
+    {% elif type == 'r'  %}
+    {% include 'includes/sidebars/radiologist_sidebar.html' %}
+    {% elif type == 'a'  %}
+    {% include 'includes/sidebars/administrator_sidebar.html' %}
+    {% endif %}
+    
+    <main class="content">
+
+      {% include 'includes/navigation.html' %}
+
+      {% block content %}{% endblock content %} 
+
+    </main>
+
+  {% include 'includes/scripts.html' %}
+    
+  <!-- Specific Page JS goes HERE  -->
+  {% block javascripts %}{% endblock javascripts %}  
+      
+</body>
+</html>

@@ -1,0 +1,309 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+
+{% block title %}Reserve Appointments {% endblock %} 
+
+
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+
+<style>
+
+.crd {
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+  max-width: 300px;
+  margin: auto;
+  text-align: center;
+  background-color: #FCF6F5FF;
+}
+
+.crd .title {
+  color: grey;
+  font-size: 18px;
+}
+
+.crd button {
+  border: none;
+  outline: 0;
+  display: inline-block;
+  padding: 8px;
+   /* color: white; 
+   background-color: #000;  */
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+  font-size: 18px;
+}
+
+.crd a {
+  text-decoration: none;
+  font-size: 22px;
+  color: black;
+}
+
+.crd button:hover, a:hover {
+  opacity: 0.7;
+}
+
+.card-image-top{
+    width: 100%;
+    height: 12vw;
+    object-fit: cover;
+}
+
+</style>
+
+{% endblock stylesheets %}
+
+
+
+
+{% block content %}
+
+  <div class="py-4">
+      <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
+          <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+              <li class="breadcrumb-item">
+                  <a href="{% url 'doctor:dashboard' %}">
+                      <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                  </a>
+              </li>
+
+              <li class="breadcrumb-item active" aria-current="page">Reserve Appointment</li>
+          </ol>
+      </nav>
+      <div class="d-flex justify-content-between w-100 flex-wrap">
+          <div class="mb-3 mb-lg-0">
+
+            
+              <h1 class="h4">Reserve Appointment </h1>
+          </div>
+
+      </div>
+  </div>
+
+
+    {% for message in messages %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{message}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+
+
+  <div class="card border border-2 border-primary shadow mb-4" style="background-color: white;">
+
+    <div class="card-body">
+
+        <nav>
+            <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
+              <button class="border border-1 border-primary nav-link btn-success active" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#gp" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">General Physician</button>
+              <button class="border border-1 border-primary nav-link btn-warning" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#pul" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Pulmonology</button>
+              <button class="border border-1 border-primary nav-link btn-info" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#rad" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Radiology</button>
+              <button class="border border-1 border-primary nav-link btn-danger" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#onco" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Oncology</button>
+            </div>
+          </nav>
+          <div class="tab-content" id="nav-tabContent">
+
+
+            <!-- GENERAL PHYSICIAN STARTS HERE -->
+            <div class="tab-pane fade show active" id="gp" role="tabpanel" aria-labelledby="nav-home-tab">
+
+
+                <br><br>
+                <div class="row row-cols-1 row-cols-md-4 g-4">
+
+                    {% for doc in list %}
+                    {% if doc.specialization == 'gp' %}
+                    <div class="col">
+
+                        <div class="crd rounded-3">
+                            <img src="{{doc.profile_image.url}}" class="card-image-top rounded-3" alt="profile_picture">
+                            <h1>{{doc.get_full_name}}</h1>
+                            <p class="title">{{doc.get_specialization_display}}</p>
+                            <p><strong>PMC Reg: </strong> {{doc.pmc}}</p>
+                            <p>{{doc.email}}</p>
+                            <p>
+                                <a href="https://www.pmc.gov.pk/Doctors/Details?regNo={{doc.pmc}}" target="_blank" rel="noopener noreferrer"><button class="rounded-0 btn btn-outline-info border border-2 border-info">Check PMC Validation</button></a>
+                            </p>
+                            <p>
+                                <button class="btn btn-success border border-2 border-success rounded-0" data-bs-toggle="modal" data-bs-target="#add{{doc.id}}">Request an Appointment</button>
+                            </p>
+
+                        </div>
+
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+
+                </div>
+
+            </div>
+            <!-- ENDS HERE -->
+
+
+
+
+            <!-- PULMUNOLOGY STARTS HERE -->
+            <div class="tab-pane fade" id="pul" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+                <br><br>
+                <div class="row row-cols-1 row-cols-md-4 g-4">
+
+                    {% for doc in list %}
+                    {% if doc.specialization == 'p' %}
+                    <div class="col">
+
+                        <div class="crd rounded-3">
+                            <img src="{{doc.profile_image.url}}" class="card-image-top rounded-3" alt="profile_picture">
+                            <h1>{{doc.get_full_name}}</h1>
+                            <p class="title">{{doc.get_specialization_display}}</p>
+                            <p><strong>PMC Reg: </strong> {{doc.pmc}}</p>
+                            <p>{{doc.email}}</p>
+                            <p>
+                                <a href="https://www.pmc.gov.pk/Doctors/Details?regNo={{doc.pmc}}" target="_blank" rel="noopener noreferrer"><button class="rounded-0 btn btn-outline-info border border-2 border-info">Check PMC Validation</button></a>
+                            </p>
+                            <p>
+                                <button class="btn btn-success border border-2 border-success rounded-0" data-bs-toggle="modal" data-bs-target="#add{{doc.id}}">Request an Appointment</button>
+                            </p>
+
+                        </div>
+
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+
+                </div>
+
+
+            </div>
+            <!-- ENDS HERE -->
+
+
+
+
+            <!-- RADIOLOGY STARTS HERE -->
+            <div class="tab-pane fade" id="rad" role="tabpanel" aria-labelledby="nav-contact-tab">
+
+                <br><br>
+                <div class="row row-cols-1 row-cols-md-4 g-4">
+
+                    {% for doc in list %}
+                    {% if doc.specialization == 'r' %}
+                    <div class="col">
+
+                        <div class="crd rounded-3">
+                            <img src="{{doc.profile_image.url}}" class="card-image-top rounded-3" alt="profile_picture">
+                            <h1>{{doc.get_full_name}}</h1>
+                            <p class="title">{{doc.get_specialization_display}}</p>
+                            <p><strong>PMC Reg: </strong> {{doc.pmc}}</p>
+                            <p>{{doc.email}}</p>
+                            <p>
+                                <a href="https://www.pmc.gov.pk/Doctors/Details?regNo={{doc.pmc}}" target="_blank" rel="noopener noreferrer"><button class="rounded-0 btn btn-outline-info border border-2 border-info">Check PMC Validation</button></a>
+                            </p>
+                            <p>
+                                <button class="btn btn-success border border-2 border-success rounded-0" data-bs-toggle="modal" data-bs-target="#add{{doc.id}}">Request an Appointment</button>
+                            </p>
+
+                        </div>
+
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+
+                </div>
+
+            </div>
+            <!-- ENDS HERE -->
+
+
+
+
+            <!-- ONCOLOGY STARTS HERE  -->
+            <div class="tab-pane fade" id="onco" role="tabpanel" aria-labelledby="nav-contact-tab">
+
+                <br><br>
+                <div class="row row-cols-1 row-cols-md-4 g-4">
+
+                    {% for doc in list %}
+                    {% if doc.specialization == 'o' %}
+                    <div class="col">
+
+                        <div class="crd rounded-3">
+                            <img src="{{doc.profile_image.url}}" class="card-image-top rounded-3" alt="profile_picture">
+                            <h1>{{doc.get_full_name}}</h1>
+                            <p class="title">{{doc.get_specialization_display}}</p>
+                            <p><strong>PMC Reg: </strong> {{doc.pmc}}</p>
+                            <p>{{doc.email}}</p>
+                            <p>
+                                <a href="https://www.pmc.gov.pk/Doctors/Details?regNo={{doc.pmc}}" target="_blank" rel="noopener noreferrer"><button class="rounded-0 btn btn-outline-info border border-2 border-info">Check PMC Validation</button></a>
+                            </p>
+                            <p>
+                                <button class="btn btn-success border border-2 border-success rounded-0" data-bs-toggle="modal" data-bs-target="#add{{doc.id}}">Request an Appointment</button>
+                            </p>
+
+                        </div>
+
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+
+                </div>
+
+
+            </div>
+            <!-- ENDS HERE -->
+
+
+          </div>
+    </div>
+
+  
+  </div>
+
+
+
+
+<!-- Appointment Modal -->
+{% for doc in list %}
+<div class="modal fade" id="add{{doc.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Request Appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+        
+                <form action="" method="post">
+
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <input type="hidden" name="id" value="{{doc.id}}">
+                    <input type="submit" class="btn btn-primary" value="Request">
+
+                </form>
+        
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+
+
+
+{% endblock content %}
+
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

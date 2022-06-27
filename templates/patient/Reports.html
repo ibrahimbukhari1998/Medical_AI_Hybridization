@@ -1,0 +1,305 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+
+{% block title %} Report History {% endblock %} 
+
+
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+
+
+
+{% block content %}
+
+  <div class="py-4">
+      <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
+          <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+              <li class="breadcrumb-item">
+                  <a href="{% url 'doctor:dashboard' %}">
+                      <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                  </a>
+              </li>
+
+              <li class="breadcrumb-item active" aria-current="page">Patient Report</li>
+          </ol>
+      </nav>
+      <div class="d-flex justify-content-between w-100 flex-wrap">
+          <div class="mb-3 mb-lg-0">
+
+            
+              <h1 class="h4">Patient Report </h1>
+          </div>
+      </div>
+  </div>
+
+  <div class="row">
+
+    <div class="col">
+
+        <div class="card border-0 shadow mb-4">
+
+            <div class="card-body">
+        
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                      <button class="nav-link btn-success active" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#med" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Medical Reports</button>
+                      <button class="nav-link" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#rad" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Radiology Reports</button>
+                    </div>
+                  </nav>
+                  <div class="tab-content" id="nav-tabContent">
+        
+        
+                    <!-- MEDICAL REPORTS STARTS HERE -->
+                    <div class="tab-pane fade show active" id="med" role="tabpanel" aria-labelledby="nav-home-tab">
+        
+                        <br>
+                        <div class="table-responsive">
+                            <table class="table table-centered table-nowrap mb-0 rounded">
+        
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="border-0 rounded-start">Patient</th>
+                                        <th class="border-0">Doctor</th>
+                                        <th class="border-0">Specialization</th>
+                                        <th class="border-0">Date</th>
+                                        <th class="border-0">Actions</th>
+                                    </tr>
+                                </thead>
+        
+                                <tbody>
+        
+                                    {% if rrep %}
+                                    {% for rep in mrep %}
+        
+                                    <tr>
+                                        <td>{{rep.patient.get_full_name}}</td>
+                                        <td>{{rep.doctor.get_full_name}}</td>
+                                        <td>{{rep.doctor.get_specialization_display}}</td>
+                                        <td>{{rep.date}}</td>
+                                        <td><button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#med{{rep.id}}">Details</button></td>
+                                    </tr>
+        
+                                    {% endfor %}
+                                    {% endif %}
+        
+                                </tbody>
+                            </table>
+                        </div>
+        
+                    </div>
+                    <!-- ENDS HERE -->
+        
+        
+                    <!-- RADIOLOGY REPORTS STARTS HERE -->
+                    <div class="tab-pane fade" id="rad" role="tabpanel" aria-labelledby="nav-profile-tab">
+        
+                        <br>
+                        <div class="table-responsive">
+                            <table class="table table-centered table-nowrap mb-0 rounded">
+        
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="border-0 rounded-start">Patient</th>
+                                        <th class="border-0">Radiologist</th>
+                                        <th class="border-0">Radiology Type</th>
+                                        <th class="border-0">Body Location</th>
+                                        <th class="border-0">Date</th>
+                                        <th class="border-0">Actions</th>
+                                    </tr>
+                                </thead>
+        
+                                <tbody>
+        
+                                    {% if rrep %}
+                                    {% for rep in rrep %}
+        
+                                    <tr>
+                                        <td>{{rep.patient.get_full_name}}</td>
+                                        <td>{{rep.radiologist.get_full_name}}</td>
+                                        <td>{{rep.get_rad_types_display}}</td>
+                                        <td>{{rep.get_body_display}}</td>
+                                        <td>{{rep.date}}</td>
+                                        <td><button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#rad{{rep.id}}">Details</button></td>
+                                    </tr>
+        
+                                    {% endfor %}
+                                    {% endif %}
+        
+                                </tbody>
+                            </table>
+                        </div>
+        
+        
+                    </div>
+                    <!-- ENDS HERE -->
+                    
+        
+        
+                    <!-- Med Modal -->
+                    {% for rep in mrep %}
+                    <div class="modal fade" id="med{{rep.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Medical Report</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+        
+                                <!-- Report Info Accordian -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                                        REPORT INFO
+                                      </button>
+                                    </h2>
+                                    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                                        <div class="accordion-body">
+                                            <ul style="color: black;">
+                                                <li><strong>Patient's Name:&emsp;&emsp;</strong>{{ rep.patient.get_full_name }}</li><br>
+                                                <li><strong>Doctor's Name:&emsp;&emsp;</strong>{{ rep.doctor.get_full_name }}</li><br>
+                                                <li><strong>Doctor's Specialization:&emsp;&emsp;</strong>{{ rep.doctor.get_specialization_display }}</li><br>
+                                                <li><strong>Date:&emsp;&emsp;</strong>{{ rep.date }}</li><br>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                  </div>
+        
+        
+                                  <!-- Report Details Accordian -->
+                                  <div class="accordion-item">
+                                    <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
+                                        Details
+                                      </button>
+                                    </h2>
+                                    <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingTwo">
+                                        <div class="accordion-body">
+                                            <ul style="color: black;">
+                                                <li><strong>Visit Reason:&emsp;&emsp;</strong>{{ rep.visit_reason }}</li><br>
+                                                <li><strong>Analysis:&emsp;&emsp;</strong>{{ rep.analysis }}</li><br>
+                                                <li><strong>Comments:&emsp;&emsp;</strong>{{ rep.comments }}</li><br>
+                                                <li><strong>Prescription:&emsp;&emsp;</strong>{{ rep.prescription }}</li><br>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                  </div>
+        
+        
+                                  <!-- Report Image Display -->
+                                  <div class="accordion-item">
+                                    <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+                                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="true" aria-controls="panelsStayOpen-collapseThree">
+                                        Medical Images
+                                      </button>
+                                    </h2>
+                                    <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingThree">
+                                        <div class="accordion-body">
+                                            {% if rep.med_image %}
+                                            <img class="rounded-2" alt="Image placeholder" src="{{ rep.med_image.url }}">
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                  </div>
+        
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+        
+        
+                    <!-- Rad Modal -->
+                    {% for rep in rrep %}
+                    <div class="modal fade" id="rad{{rep.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Radiology Report</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+        
+                                <!-- Report Info Accordian -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                                        REPORT INFO
+                                      </button>
+                                    </h2>
+                                    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                                        <div class="accordion-body">
+                                            <ul style="color: black;">
+                                                <li><strong>Patient's Name:&emsp;&emsp;</strong>{{ rep.patient.get_full_name }}</li><br>
+                                                <li><strong>Radiologist's Name:&emsp;&emsp;</strong>{{ rep.radiologist.get_full_name }}</li><br>
+                                                <li><strong>Radiology Type:&emsp;&emsp;</strong>{{ rep.get_rad_types_display }}</li><br>
+                                                <li><strong>Body Location:&emsp;&emsp;</strong>{{ rep.get_body_display }}</li><br>
+                                                <li><strong>Date:&emsp;&emsp;</strong>{{ rep.date }}</li><br>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                  </div>
+        
+        
+                                  <!-- Report Details Accordian -->
+                                  <div class="accordion-item">
+                                    <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
+                                        Details
+                                      </button>
+                                    </h2>
+                                    <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingTwo">
+                                        <div class="accordion-body">
+                                            <ul style="color: black;">
+                                                <li><strong>Analysis:&emsp;&emsp;</strong>{{ rep.analysis }}</li><br>
+                                                <li><strong>Comments:&emsp;&emsp;</strong>{{ rep.comments }}</li><br>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                  </div>
+        
+        
+                                  <!-- Report Image Display -->
+                                  <div class="accordion-item">
+                                    <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+                                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="true" aria-controls="panelsStayOpen-collapseThree">
+                                        Radiology Images
+                                      </button>
+                                    </h2>
+                                    <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingThree">
+                                        <div class="accordion-body">
+                                            {% if rep.rad_image %}
+                                            <img class="rounded-2" alt="Image placeholder" src="{{ rep.rad_image.url }}">
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                  </div>
+        
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+        
+                  </div>
+            </div>
+        
+          
+          </div>
+
+    </div>
+
+  </div>
+
+{% endblock content %}
+
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

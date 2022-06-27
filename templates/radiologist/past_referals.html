@@ -1,0 +1,399 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+
+{% block title %} Past Appointments {% endblock %} 
+
+
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+
+
+
+{% block content %}
+
+  <div class="py-4">
+      <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
+          <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+              <li class="breadcrumb-item">
+                  <a href="{% url 'doctor:dashboard' %}">
+                      <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                  </a>
+              </li>
+
+              <li class="breadcrumb-item active" aria-current="page"> Past Appointments</li>
+          </ol>
+      </nav>
+      <div class="d-flex justify-content-between w-100 flex-wrap">
+          <div class="mb-3 mb-lg-0">
+
+            
+              <h1 class="h4">Past Appointments </h1>
+          </div>
+
+      </div>
+  </div>
+
+
+
+  {% for message in messages %}
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      {{message}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+
+
+  <div class="card border-0 shadow mb-4">
+
+    <div class="card-body">
+
+        <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+              <button class="nav-link btn-info active" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Completed</button>
+              <button class="nav-link btn-danger" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#cancelled" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Cancelled</button>
+              <button class="nav-link" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab" aria-controls="nav-home" aria-selected="true">All</button>
+            </div>
+          </nav>
+          <div class="tab-content" id="nav-tabContent">
+
+
+            <!-- ALL APPOINTMENTS STARTS HERE -->
+            <div class="tab-pane fade" id="all" role="tabpanel" aria-labelledby="nav-home-tab">
+
+                <br>
+                <div class="table-responsive">
+                    <table class="table table-centered table-nowrap mb-0 rounded">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="border-0 rounded-start">Patient</th>
+                                <th class="border-0">Doctor</th>
+                                <th class="border-0">Date</th>
+                                <th class="border-0">Test type</th>
+                                <th class="border-0">Body Location</th>
+                                <th class="border-0">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        
+                            {% if list %}
+        
+                                {% for referal in list %}
+        
+                                        <!-- Item -->
+                                        <tr>
+                                            <td> {{ referal.patient.get_full_name }} </td>
+        
+                                            <td> {{ referal.doctor.get_full_name }} </td>
+                                            
+                                            <td class="fw-bold"> {{referal.date}} </td>
+        
+                                            <td> {{ referal.get_rad_types_display }} </td>
+        
+                                            <td> {{referal.get_body_display}} </td>
+        
+                                            <td>
+                                                <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#referal{{referal.id}}">View</button>
+                                                {% if referal.status == 'completed' %}
+                                                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#report{{referal.id}}">View Submitted Report</button>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <!-- End of Item -->
+        
+        
+                                {% endfor %}
+        
+                            {% endif %}
+        
+        
+        
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <!-- ENDS HERE -->
+
+
+            <!-- COMPLETED APPOINTMENTS STARTS HERE -->
+            <div class="tab-pane fade show active" id="completed" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+                <br>
+                <div class="table-responsive">
+                    <table class="table table-centered table-nowrap mb-0 rounded">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="border-0 rounded-start">Patient</th>
+                                <th class="border-0">Doctor</th>
+                                <th class="border-0">Date</th>
+                                <th class="border-0">Test type</th>
+                                <th class="border-0">Body Location</th>
+                                <th class="border-0">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        
+                            {% if list %}
+        
+                                {% for referal in list %}
+                                {% if referal.status == 'completed' %}
+        
+                                        <!-- Item -->
+                                        <tr>
+                                            <td> {{ referal.patient.get_full_name }} </td>
+        
+                                            <td> {{ referal.doctor.get_full_name }} </td>
+                                            
+                                            <td class="fw-bold"> {{referal.date}} </td>
+        
+                                            <td> {{ referal.get_rad_types_display }} </td>
+        
+                                            <td> {{referal.get_body_display}} </td>
+        
+                                            <td>
+                                                <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#referal{{referal.id}}">View</button>
+                                                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#report{{referal.id}}">View Submitted Report</button>
+                                            </td>
+                                        </tr>
+                                        <!-- End of Item -->
+        
+                                {% endif %}
+                                {% endfor %}
+        
+                            {% endif %}
+        
+        
+        
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+            <!-- ENDS HERE -->
+            
+
+            <!-- CANCELLED APPOINTMENTS STARTS HERE -->
+            <div class="tab-pane fade" id="cancelled" role="tabpanel" aria-labelledby="nav-contact-tab">
+
+                <br>
+                <div class="table-responsive">
+                    <table class="table table-centered table-nowrap mb-0 rounded">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="border-0 rounded-start">Patient</th>
+                                <th class="border-0">Doctor</th>
+                                <th class="border-0">Date</th>
+                                <th class="border-0">Test type</th>
+                                <th class="border-0">Body Location</th>
+                                <th class="border-0">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        
+                            {% if list %}
+        
+                                {% for referal in list %}
+                                {% if referal.status == 'cancelled' %}
+        
+                                        <!-- Item -->
+                                        <tr>
+                                            <td> {{ referal.patient.get_full_name }} </td>
+        
+                                            <td> {{ referal.doctor.get_full_name }} </td>
+                                            
+                                            <td class="fw-bold"> {{referal.date}} </td>
+        
+                                            <td> {{ referal.get_rad_types_display }} </td>
+        
+                                            <td> {{referal.get_body_display}} </td>
+        
+                                            <td>
+                                                <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#referal{{referal.id}}">View</button>
+                                            </td>
+                                        </tr>
+                                        <!-- End of Item -->
+        
+                                {% endif %}
+                                {% endfor %}
+        
+                            {% endif %}
+        
+        
+        
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <!-- ENDS HERE -->
+
+          </div>
+    </div>
+
+  
+  </div>
+
+
+
+
+                <!-- REFERAL Modal -->
+                {% for referal in list %}
+                <div class="modal fade" id="referal{{referal.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Referal Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+    
+                            <div class="accordion" id="accordionPanelsStayOpenExample">
+
+                                <!-- PATIENT INFO -->
+                                  <div class="accordion-item">
+                                    <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                                        DOCTOR'S INFO
+                                      </button>
+                                    </h2>
+                                    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                                      <div class="accordion-body">
+                                        <ul style="color: black;">
+                                              <li><strong>Refered Patient:&emsp;&emsp;</strong>{{ referal.patient.get_full_name }}</li><br>
+                                              <li><strong>Referee Doctor:&emsp;&emsp;</strong>{{ referal.doctor.get_full_name }}</li><br>
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  </div>
+              
+              
+                                  <!-- DETAILS -->
+                                  <div class="accordion-item">
+                                    <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
+                                            DETAILS
+                                        </button>
+                                      </h2>
+                                      <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingTwo">
+                                        <div class="accordion-body">
+                                          <ul style="color: black;">
+                                            <li><strong>Test Type:&emsp;&emsp;</strong>{{ referal.get_rad_types_display }}</li><br>
+                                            <li><strong>Body Location:&emsp;&emsp;</strong>{{ referal.get_body_display }}</li><br>
+                                            <li><strong>Date:&emsp;&emsp;</strong>{{ referal.date }}</li><br>
+                                          </ul>
+                                        </div>
+                                      </div>
+                                </div>
+            
+            
+                                  <!-- DESCRIPTION -->
+                                  <div class="accordion-item">
+                                      <h2 class="accordion-header" id="panelsStayOpen-headingFour">
+                                          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseFour" aria-expanded="true" aria-controls="panelsStayOpen-collapseFour">
+                                              DESCRIPTION
+                                          </button>
+                                        </h2>
+                                        <div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingFour">
+                                          <div class="accordion-body">
+                                            <ul style="color: black;">
+                                                  <li>{{ referal.description }}</li>
+                                            </ul>
+                                          </div>
+                                        </div>
+                                  </div>
+                                  
+                              </div><br>
+    
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+
+                <!-- REPORT MODAL -->
+                {% for referal in list %}
+                <div class="modal fade" id="report{{referal.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Submitted Report</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+    
+                                    <!-- Report Info Accordian -->
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                                            REPORT INFO
+                                        </button>
+                                        </h2>
+                                        <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                                            <div class="accordion-body">
+                                                <ul style="color: black;">
+                                                    <li><strong>Patient's Name:&emsp;&emsp;</strong>{{ referal.radrep.patient.get_full_name }}</li><br>
+                                                    <li><strong>Radiologist's Name:&emsp;&emsp;</strong>{{ referal.radrep.radiologist.get_full_name }}</li><br>
+                                                    <li><strong>Radiology Type:&emsp;&emsp;</strong>{{ referal.radrep.get_rad_types_display }}</li><br>
+                                                    <li><strong>Body Location:&emsp;&emsp;</strong>{{ referal.radrep.get_body_display }}</li><br>
+                                                    <li><strong>Date:&emsp;&emsp;</strong>{{ referal.radrep.date }}</li><br>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+            
+            
+                                    <!-- Report Details Accordian -->
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
+                                            Details
+                                        </button>
+                                        </h2>
+                                        <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingTwo">
+                                            <div class="accordion-body">
+                                                <ul style="color: black;">
+                                                    <li><strong>Analysis:&emsp;&emsp;</strong>{{ referal.radrep.analysis }}</li><br>
+                                                    <li><strong>Comments:&emsp;&emsp;</strong>{{ referal.radrep.comments }}</li><br>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+            
+            
+                                    <!-- Report Image Display -->
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="true" aria-controls="panelsStayOpen-collapseThree">
+                                            Radiology Images
+                                        </button>
+                                        </h2>
+                                        <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingThree">
+                                            <div class="accordion-body">
+                                                {% if referal.radrep.rad_image %}
+                                                <img class="rounded-2" alt="Image placeholder" src="{{ referal.radrep.rad_image.url }}">
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+    
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+
+{% endblock content %}
+
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
