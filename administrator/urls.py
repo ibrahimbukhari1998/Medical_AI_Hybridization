@@ -18,5 +18,8 @@ urlpatterns = [
     path('reports/<int:id>/delete', views.DeleteReport.as_view(), name='delete_reports'),
     path('reports/rad/add', views.AddRadReport.as_view(), name='radreport_add'),
     path('reports/med/add', views.AddMedReport.as_view(), name='medreport_add'),
+    path('referals/<int:id>/detail', views.Referal_detail.as_view(), name='referal_detail'),
+    path('referals/<int:id>.delete', views.DeleteReferal.as_view(), name='delete_referal'),
+    path('referals/add', views.AddReferal.as_view(), name='referal_add'),
     
 ]

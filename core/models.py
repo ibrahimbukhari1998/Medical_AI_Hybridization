@@ -114,12 +114,12 @@ ref_status = (
 
 class Referal(models.Model):
         patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True, related_name='referal_patient')
-        rad_report = models.ForeignKey(Radreport, on_delete=models.SET_NULL, null=True, blank=True, related_name='rad_report')
+        rad_report = models.ForeignKey(Radreport, on_delete=models.SET_NULL, null=True, blank=True, related_name='rad_report')    #similar as radrep. Reso;ve this issue
         doctor = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True, blank=True, related_name='referal_doctor')
-        radiologist = models.ForeignKey(Radiologist, on_delete=models.SET_NULL, null=True, blank=True, related_name='referal_radiologist')
+        radiologist = models.ForeignKey(Radiologist, on_delete=models.SET_NULL, null=True, blank=True, related_name='referal_radiologist')  #Radiologist is mandotory
         rad_types = models.CharField('Test Type', max_length=100, choices=Rad_types, default='ot', blank=True)
         body = models.CharField('Body Location', max_length=100, choices=Body_location, default='ot', blank=True)
-        description = models.TextField('Description', null=True, blank=True)
+        description = models.TextField('Description', null=True, blank=True)    #Description is Mandatory
         status = models.CharField('Status', max_length=100, choices=ref_status, default='pending')
         date = models.DateField('Date', default=date.today)
         radrep = models.ForeignKey(Radreport, on_delete=models.DO_NOTHING, null=True, blank=True)

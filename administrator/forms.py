@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 # from django.contrib.auth import get_user_model
 
 from register.models import Patient, Doctor, Radiologist
-from core.models import Appointment, Medreport, Radreport
+from core.models import Appointment, Medreport, Radreport, Referal
 from fypDjango import settings
 
 
@@ -322,6 +322,59 @@ class RadReportForm(forms.ModelForm):
     class Meta:
         model = Radreport
         fields = ["patient", "doctor", "radiologist", "report_type", "date", "rad_types", "body", "analysis", "comments", "rad_image"]
+        widgets = {
+            'date': DateInput(),
+        }
+
+
+
+
+
+
+
+# REFERAL FORM 
+class ReferalForm(forms.ModelForm):
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_show_errors = False
+        self.helper.layout = Layout(
+            
+            Row(
+                Column(FloatingField('patient', css_class='form-group col-md-4 mb-0 hovercolor')),
+                Column(FloatingField('doctor', css_class='form-group col-md-4 mb-0 hovercolor')),
+                Column(FloatingField('radiologist', css_class='form-group col-md-4 mb-0 hovercolor')),
+                css_class='form-row'
+            ), 
+            
+            HTML(""" <br> """),
+            Row(
+                Column(FloatingField('status', css_class='form-group col-md-6 mb-0 hovercolor')),
+                Column(FloatingField('date', css_class='form-group col-md-6 mb-0 hovercolor')),
+                css_class='form-row'
+            ),
+            HTML(""" <br> """),
+            
+            
+            Row(
+                Column(FloatingField('rad_types', css_class='form-group col-md-6 mb-0 hovercolor')),
+                Column(FloatingField('body', css_class='form-group col-md-6 mb-0 hovercolor')),
+                css_class='form-row'
+            ),
+            HTML(""" <br> """),
+            
+            'description',
+            
+            HTML(""" <div class='text-center'> """),
+            Submit('submit', 'Save'),
+            HTML(""" </div> """),
+        )
+
+    class Meta:
+        model = Referal
+        fields = ["patient", "doctor", "radiologist", "status", "date", "rad_types", "body", "description"]
         widgets = {
             'date': DateInput(),
         }

@@ -6,12 +6,13 @@ from pathlib import Path
 
 
 from django.contrib import messages
-from .forms import PatientForm, DoctorForm, RadiologistForm, AppointmentForm, MedReportForm, RadReportForm
+from .forms import PatientForm, DoctorForm, RadiologistForm, AppointmentForm, MedReportForm, RadReportForm, ReferalForm
 from register.models import Patient, Doctor, Radiologist, CustomUser
 from core.models import Appointment as apt
 from core.models import Radreport as rrep
 from core.models import Medreport as mrep
 from core.models import Report as trep
+from core.models import Referal as refer
 
 
 #  GLOBAL VARIABLE
@@ -444,4 +445,104 @@ class DeleteReport(LoginRequiredMixin, View):
 
 # REFERAL LIST VIEW
 class Referal(LoginRequiredMixin, View):
-    pass
+    
+    login_url = '/login/'
+    
+    def get(self, request):
+        
+        if request.user.account_type == 'a':
+            
+            ref = refer.objects.all().order_by('-date')
+            return render(request, 'administrator/referals.html', {'list':ref, 'type':request.user.account_type}) 
+            
+        else:
+            messages.success(request, 'Yikes! Seems like you were accessing something you shouldn\'t have ')
+            return redirect('core:landing')
+        
+
+
+
+
+
+# REFERAL DETAIL
+class Referal_detail(LoginRequiredMixin, View):
+    
+    login_url = '/login/'
+    
+    def get(self, request, id):
+        
+        if request.user.account_type == 'a':
+            
+            ref = refer.objects.get(pk=id)
+            form = ReferalForm(instance=ref)
+            return render(request, 'administrator/referal_detail.html', {'form':form, 'type':request.user.account_type, 'ref_id':ref.id}) 
+            
+        else:
+            messages.success(request, 'Yikes! Seems like you were accessing something you shouldn\'t have ')
+            return redirect('core:landing')
+        
+        
+    def post(self, request, id):
+        
+        if request.user.account_type == 'a':
+            
+            ref = refer.objects.get(pk=id)
+            form = ReferalForm(request.POST, instance=ref)
+            
+            if not form.is_valid():
+                return render(request, 'administrator/referal_detail.html', {'form':form, 'type':request.user.account_type, 'appoint_id':ref.id})  
+            
+            form.save()
+            return redirect("administrator:referals")
+        
+        else:
+            messages.success(request, 'Yikes! Seems like you were accessing something you shouldn\'t have ')
+            return redirect('core:landing')
+
+
+
+
+
+# REFERAL DELETE
+class DeleteReferal(LoginRequiredMixin, View):
+    
+    login_url = '/login/'
+    
+    def get(self, request, id):
+        
+        if request.user.account_type == 'a':
+                ref = refer.objects.get(pk=id)
+                ref.delete()
+                return redirect("administrator:referals")
+        
+        else:
+            messages.success(request, 'Yikes! Seems like you were trying to access something you shouldn\'t have ')
+            return redirect('core:landing')
+
+
+
+
+# REFERAL ADD
+class AddReferal(LoginRequiredMixin, View):
+    
+    login_url = '/login/'
+    
+    def get(self, request):
+        
+        if request.user.account_type == 'a':
+            form = ReferalForm()
+            return render(request, "administrator/referal_add.html", {'form':form, 'type':request.user.account_type})
+        else:
+            messages.success(request, 'Yikes! Seems like you were accessing something you shouldn\'t have ')
+            return redirect('core:landing')
+
+    def post(self, request):
+        
+        form = ReferalForm(request.POST)
+        
+        if not form.is_valid():
+            return render(request, "administrator/referal_add.html", {'form':form, 'type':request.user.account_type})
+        
+        form.save()
+        messages.success(request, 'Referal has been successfully created')
+        return redirect("administrator:referals")
