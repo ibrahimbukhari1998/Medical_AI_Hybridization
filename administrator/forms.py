@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 # from django.contrib.auth import get_user_model
 
 from register.models import Patient, Doctor, Radiologist
-from core.models import Appointment
+from core.models import Appointment, Medreport, Radreport
 from fypDjango import settings
 
 
@@ -220,4 +220,108 @@ class AppointmentForm(forms.ModelForm):
         widgets = {
             'date': DateInput(),
             'start_time': TimePickerInput()
+        }
+
+
+
+
+
+
+
+
+# REPORT FORM
+class MedReportForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_show_errors = False
+        self.helper.layout = Layout(
+            
+            FloatingField('patient', css_class="hovercolor"),
+            FloatingField('doctor', css_class="hovercolor"),   
+            
+            HTML(""" <br> """),
+            Row(
+                Column(FloatingField('report_type', css_class='form-group col-md-6 mb-0 hovercolor')),
+                Column(FloatingField('date', css_class='form-group col-md-6 mb-0 hovercolor')),
+                css_class='form-row'
+            ),
+            HTML(""" <br> """),
+            
+            'visit_reason',
+            'analysis',
+            'comments',
+            'Prescription',            
+
+            HTML(""" <br> """),
+
+    
+            'med_image',
+                        
+            HTML(""" <div class='text-center'> """),
+            Submit('submit', 'Save'),
+            HTML(""" </div> """),
+        )
+
+    class Meta:
+        model = Medreport
+        fields = ["patient", "doctor", "report_type", "date", "visit_reason", "analysis", "comments", "Prescription", "med_image"]
+        widgets = {
+            'date': DateInput(),
+            # 'start_time': TimePickerInput()
+        }
+
+
+# REPORT FORM
+class RadReportForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_show_errors = False
+        self.helper.layout = Layout(
+            
+            Row(
+                Column(FloatingField('patient', css_class='form-group col-md-4 mb-0 hovercolor')),
+                Column(FloatingField('doctor', css_class='form-group col-md-4 mb-0 hovercolor')),
+                Column(FloatingField('radiologist', css_class='form-group col-md-4 mb-0 hovercolor')),
+                css_class='form-row'
+            ), 
+            
+            HTML(""" <br> """),
+            Row(
+                Column(FloatingField('report_type', css_class='form-group col-md-6 mb-0 hovercolor')),
+                Column(FloatingField('date', css_class='form-group col-md-6 mb-0 hovercolor')),
+                css_class='form-row'
+            ),
+            HTML(""" <br> """),
+            
+            
+            Row(
+                Column(FloatingField('rad_types', css_class='form-group col-md-6 mb-0 hovercolor')),
+                Column(FloatingField('body', css_class='form-group col-md-6 mb-0 hovercolor')),
+                css_class='form-row'
+            ),
+            HTML(""" <br> """),
+            
+            'analysis',
+            'comments',
+
+            HTML(""" <br> """),
+
+            'rad_image',            
+            
+            HTML(""" <div class='text-center'> """),
+            Submit('submit', 'Save'),
+            HTML(""" </div> """),
+        )
+
+    class Meta:
+        model = Radreport
+        fields = ["patient", "doctor", "radiologist", "report_type", "date", "rad_types", "body", "analysis", "comments", "rad_image"]
+        widgets = {
+            'date': DateInput(),
         }

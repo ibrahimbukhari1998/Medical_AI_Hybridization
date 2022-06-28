@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 from django.contrib import messages
-from .forms import PatientForm, DoctorForm, RadiologistForm, AppointmentForm
+from .forms import PatientForm, DoctorForm, RadiologistForm, AppointmentForm, MedReportForm, RadReportForm
 from register.models import Patient, Doctor, Radiologist, CustomUser
 from core.models import Appointment as apt
 from core.models import Radreport as rrep
@@ -245,6 +245,8 @@ class DeleteAppointment(LoginRequiredMixin, View):
 # ADD APPOINTMENT
 class AddAppointment(LoginRequiredMixin, View):
     
+    login_url = '/login/'
+    
     def get(self, request):
         
         if request.user.account_type == 'a':
@@ -291,21 +293,143 @@ class Report(LoginRequiredMixin, View):
 
 # REPORT DETAIL
 class Report_detail(LoginRequiredMixin, View):
-    pass
+    
+    login_url = '/login/'
+    
+    
+    def get(self, request, id):
+        
+        if request.user.account_type == 'a':
+        
+            rep = trep.objects.get(pk=id)
+            if rep.report_type == 'rad':
+                
+                radrep = rrep.objects.get(pk=id)
+                rform = RadReportForm(instance = radrep)
+                
+                return render(request, "administrator/reports_detail.html", {'form':rform, 'type':request.user.account_type, 'report_type':rep.report_type, 'report_id':rep.id})
+                
+            elif rep.report_type == 'med':
+                
+                medrep = mrep.objects.get(pk=id)
+                mform = MedReportForm(instance = medrep)
+                
+                return render(request, "administrator/reports_detail.html", {'form':mform, 'type':request.user.account_type, 'report_type':rep.report_type, 'report_id':rep.id})
+            
+        else:
+            messages.success(request, 'Yikes! Seems like you were accessing something you shouldn\'t have ')
+            return redirect('core:landing')
+    
+    
+    def post(self, request, id):
+        
+        if request.user.account_type == 'a':
+        
+            rep = trep.objects.get(pk=id)
+            if rep.report_type == 'rad':
+                
+                radrep = rrep.objects.get(pk=id)
+                rform = RadReportForm(request.POST, request.FILES, instance = radrep)
+                
+                if not rform.is_valid():
+                    return render(request, "administrator/reports_detail.html", {'form':rform, 'type':request.user.account_type, 'report_type':rep.report_type, 'report_id':rep.id})
+                
+                rform.save()
+                return redirect("administrator:reports")
+                
+            elif rep.report_type == 'med':
+                
+                medrep = mrep.objects.get(pk=id)
+                mform = MedReportForm(instance = medrep)
+                
+                if not mform.is_valid():
+                    return render(request, "administrator/reports_detail.html", {'form':mform, 'type':request.user.account_type, 'report_type':rep.report_type, 'report_id':rep.id})
+                
+                mform.save()
+                return redirect("administrator:reports")
+            
+        else:
+            messages.success(request, 'Yikes! Seems like you were accessing something you shouldn\'t have ')
+            return redirect('core:landing')
 
 
 
 
 # REPORT ADD
-class AddReport(LoginRequiredMixin, View):
-    pass
+class AddRadReport(LoginRequiredMixin, View):
+    
+    
+    login_url = '/login/'
+    
+    def get(self, request):
+        
+        if request.user.account_type == 'a':
+            form = RadReportForm()
+            return render(request, "administrator/Add_radreport.html", {'form':form, 'type':request.user.account_type})
+        else:
+            messages.success(request, 'Yikes! Seems like you were accessing something you shouldn\'t have ')
+            return redirect('core:landing')
+
+
+    def post(self, request):
+        
+        form = RadReportForm(request.POST, request.FILES)
+        
+        if not form.is_valid():
+            return render(request, "administrator/Add_radreport.html", {'form':form, 'type':request.user.account_type})
+        
+        form.save()
+        messages.success(request, 'Report has been successfully created')
+        return redirect("administrator:reports")
+
+
+
+
+# REPORT ADD
+class AddMedReport(LoginRequiredMixin, View):
+    
+    
+    login_url = '/login/'
+    
+    def get(self, request):
+        
+        if request.user.account_type == 'a':
+            form = MedReportForm()
+            return render(request, "administrator/Add_medreport.html", {'form':form, 'type':request.user.account_type})
+        else:
+            messages.success(request, 'Yikes! Seems like you were accessing something you shouldn\'t have ')
+            return redirect('core:landing')
+
+
+    def post(self, request):
+        
+        form = MedReportForm(request.POST, request.FILES)
+        
+        if not form.is_valid():
+            return render(request, "administrator/Add_medreport.html", {'form':form, 'type':request.user.account_type})
+        
+        form.save()
+        messages.success(request, 'Appointment has been successfully created')
+        return redirect("administrator:reports")
 
 
 
 
 # DELETE REPORT
 class DeleteReport(LoginRequiredMixin, View):
-    pass
+    
+    login_url = '/login/'
+    
+    def get(self, request, id):
+        
+        if request.user.account_type == 'a':
+                rep = trep.objects.get(pk=id)
+                rep.delete()
+                return redirect("administrator:reports")
+        
+        else:
+            messages.success(request, 'Yikes! Seems like you were accessing something you shouldn\'t have ')
+            return redirect('core:landing')
 
 
 

@@ -16,6 +16,7 @@ urlpatterns = [
     path('appointment/add', views.AddAppointment.as_view(), name='appointment_add'),
     path('reports/<int:id>/details', views.Report_detail.as_view(), name='reports_detail'),
     path('reports/<int:id>/delete', views.DeleteReport.as_view(), name='delete_reports'),
-    path('reports/add', views.AddReport.as_view(), name='reports_add'),
+    path('reports/rad/add', views.AddRadReport.as_view(), name='radreport_add'),
+    path('reports/med/add', views.AddMedReport.as_view(), name='medreport_add'),
     
 ]

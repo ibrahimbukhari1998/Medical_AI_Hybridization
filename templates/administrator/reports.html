@@ -32,10 +32,32 @@
           <div class="mb-3 mb-lg-0">
 
             
-              <a href="{% url 'administrator:reports_add' %}"><button class="btn btn-warning"><i class="fas fa-plus"></i>    Add Report</button></a>
+            <div class="dropdown">
+                <button class="btn btn-secondary d-inline-flex align-items-center me-2 dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <svg class="icon icon-xs me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    New Task
+                </button>
+                <div class="dropdown-menu dashboard-dropdown dropdown-menu-start mt-2 py-1">
+                    <a class="dropdown-item d-flex align-items-center" href="{% url 'administrator:radreport_add' %}">
+                        Add Radiology Report
+                    </a>
+                    <a class="dropdown-item d-flex align-items-center" href="{% url 'administrator:medreport_add' %}">
+                        Add Medical Report
+                    </a>
+                </div>
+            </div>
           </div>
       </div>
   </div>
+
+
+  {% for message in messages %}
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      {{message}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+
 
   <div class="card border-0 shadow mb-4">
 
@@ -73,7 +95,7 @@
                             {% if list %}
         
                                 {% for rep in list %}
-                                {% if apt.report_type == 'med' %}
+                                {% if rep.report_type == 'med' %}
 
                                         <!-- Item -->
                                         <tr class="text-center">
@@ -84,15 +106,15 @@
                                             </td>
 
                                             <td class="fw-bold">
-                                                {{rep.radiologist.get_full_name}}
+                                                <strong style="color: red;">N/A</strong>
                                             </td>
 
                                             <td>
-                                                {{ apt.date }}
+                                                {{ rep.date }}
                                             </td>
 
                                             <td>
-                                                {{apt.get_report_type_display}}
+                                                {{rep.get_report_type_display}}
                                             </td>
 
                                             <td>
@@ -141,7 +163,7 @@
                             {% if list %}
         
                                 {% for rep in list %}
-                                {% if apt.report_type == 'rad' %}
+                                {% if rep.report_type == 'rad' %}
 
                                         <!-- Item -->
                                         <tr class="text-center">
@@ -156,11 +178,11 @@
                                             </td>
 
                                             <td>
-                                                {{ apt.date }}
+                                                {{ rep.date }}
                                             </td>
 
                                             <td>
-                                                {{apt.get_report_type_display}}
+                                                {{rep.get_report_type_display}}
                                             </td>
 
                                             <td>
@@ -219,15 +241,19 @@
                                             </td>
 
                                             <td class="fw-bold">
+                                                {% if rep.report_type == 'med' %}
+                                                <strong style="color: red;">N/A</strong>
+                                                {% else %}
                                                 {{rep.radiologist.get_full_name}}
+                                                {% endif %}
                                             </td>
 
                                             <td>
-                                                {{ apt.date }}
+                                                {{ rep.date }}
                                             </td>
 
                                             <td>
-                                                {{apt.get_report_type_display}}
+                                                {{rep.get_report_type_display}}
                                             </td>
 
                                             <td>
