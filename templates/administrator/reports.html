@@ -1,0 +1,293 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+
+{% block title %} Reports {% endblock %} 
+
+
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+
+
+
+{% block content %}
+
+  <div class="py-4">
+      <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
+          <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+              <li class="breadcrumb-item">
+                  <a href="{% url 'administrator:dashboard' %}">
+                      <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                  </a>
+              </li>
+
+              <li class="breadcrumb-item active" aria-current="page">Reports</li>
+          </ol>
+      </nav>
+      <div class="d-flex justify-content-between w-100 flex-wrap">
+          <div class="mb-3 mb-lg-0">
+
+            
+              <a href="{% url 'administrator:reports_add' %}"><button class="btn btn-warning"><i class="fas fa-plus"></i>    Add Report</button></a>
+          </div>
+      </div>
+  </div>
+
+  <div class="card border-0 shadow mb-4">
+
+    <div class="card-body">
+
+        <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab" aria-controls="nav-home" aria-selected="true">All</button>
+                <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#medical" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Medical</button>
+                <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#radiology" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Radiology</button>
+            </div>
+          </nav>
+          <div class="tab-content" id="nav-tabContent">
+
+
+
+            <!-- MEDICAL STARTS HERE -->
+            <div class="tab-pane fade" id="medical" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+                <br>
+                <div class="table-responsive">
+                    <table class="table table-centered table-nowrap mb-0 rounded">
+                        <thead class="thead-light text-center">
+                            <tr>
+                                <th class="border-0 rounded-start">Patient's Name</th>
+                                <th class="border-0">Doctor's Name</th>
+                                <th class="border-0">Radiologist's Name</th>
+                                <th class="border-0">Date</th>
+                                <th class="border-0">Type</th>
+                                <th class="border-0">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        
+                            {% if list %}
+        
+                                {% for rep in list %}
+                                {% if apt.report_type == 'med' %}
+
+                                        <!-- Item -->
+                                        <tr class="text-center">
+                                            <td class="fw-bold"> {{ rep.patient.get_full_name }} </td>
+
+                                            <td class="fw-bold">
+                                                {{rep.doctor.get_full_name}}
+                                            </td>
+
+                                            <td class="fw-bold">
+                                                {{rep.radiologist.get_full_name}}
+                                            </td>
+
+                                            <td>
+                                                {{ apt.date }}
+                                            </td>
+
+                                            <td>
+                                                {{apt.get_report_type_display}}
+                                            </td>
+
+                                            <td>
+                                                <a href="{% url 'administrator:reports_detail' rep.id %}"><button class="btn btn-outline-primary">View Details</button></a>
+                                                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delconfirm{{rep.id}}">Delete</button>
+                                            </td>
+                                        </tr>
+                                        <!-- End of Item -->
+
+                                {% endif %}
+                                {% endfor %}
+        
+                            {% endif %}
+        
+        
+        
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+            <!-- ENDS HERE -->
+
+
+
+            <!-- RADIOLOGY STARTS HERE -->
+            <div class="tab-pane fade" id="radiology" role="tabpanel" aria-labelledby="nav-home-tab">
+
+
+                <br>
+                <div class="table-responsive">
+                    <table class="table table-centered table-nowrap mb-0 rounded">
+                        <thead class="thead-light text-center">
+                            <tr>
+                                <th class="border-0 rounded-start">Patient's Name</th>
+                                <th class="border-0">Doctor's Name</th>
+                                <th class="border-0">Radiologist's Name</th>
+                                <th class="border-0">Date</th>
+                                <th class="border-0">Type</th>
+                                <th class="border-0">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        
+                            {% if list %}
+        
+                                {% for rep in list %}
+                                {% if apt.report_type == 'rad' %}
+
+                                        <!-- Item -->
+                                        <tr class="text-center">
+                                            <td class="fw-bold"> {{ rep.patient.get_full_name }} </td>
+
+                                            <td class="fw-bold">
+                                                {{rep.doctor.get_full_name}}
+                                            </td>
+
+                                            <td class="fw-bold">
+                                                {{rep.radiologist.get_full_name}}
+                                            </td>
+
+                                            <td>
+                                                {{ apt.date }}
+                                            </td>
+
+                                            <td>
+                                                {{apt.get_report_type_display}}
+                                            </td>
+
+                                            <td>
+                                                <a href="{% url 'administrator:reports_detail' rep.id %}"><button class="btn btn-outline-primary">View Details</button></a>
+                                                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delconfirm{{rep.id}}">Delete</button>
+                                            </td>
+                                        </tr>
+                                        <!-- End of Item -->
+
+                                {% endif %}
+                                {% endfor %}
+        
+                            {% endif %}
+        
+        
+        
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+            <!-- ENDS HERE -->
+
+
+
+            <!-- ALL STARTS HERE -->
+            <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="nav-contact-tab">
+
+
+                <br>
+                <div class="table-responsive">
+                    <table class="table table-centered table-nowrap mb-0 rounded">
+                        <thead class="thead-light text-center">
+                            <tr>
+                                <th class="border-0 rounded-start">Patient's Name</th>
+                                <th class="border-0">Doctor's Name</th>
+                                <th class="border-0">Radiologist's Name</th>
+                                <th class="border-0">Date</th>
+                                <th class="border-0">Type</th>
+                                <th class="border-0">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        
+                            {% if list %}
+        
+                                {% for rep in list %}
+
+                                        <!-- Item -->
+                                        <tr class="text-center">
+                                            <td class="fw-bold"> {{ rep.patient.get_full_name }} </td>
+
+                                            <td class="fw-bold">
+                                                {{rep.doctor.get_full_name}}
+                                            </td>
+
+                                            <td class="fw-bold">
+                                                {{rep.radiologist.get_full_name}}
+                                            </td>
+
+                                            <td>
+                                                {{ apt.date }}
+                                            </td>
+
+                                            <td>
+                                                {{apt.get_report_type_display}}
+                                            </td>
+
+                                            <td>
+                                                <a href="{% url 'administrator:reports_detail' rep.id %}"><button class="btn btn-outline-primary">View Details</button></a>
+                                                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delconfirm{{rep.id}}">Delete</button>
+                                            </td>
+                                        </tr>
+                                        <!-- End of Item -->
+
+                                {% endfor %}
+        
+                            {% endif %}
+        
+        
+        
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+            <!-- ENDS HERE -->
+
+        </div>
+    </div>
+
+
+
+
+    <!-- DELETION CONFIRMATION -->
+    {% for rep in list %}
+    <div class="modal fade" id="delconfirm{{rep.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title">Confirm Deletion</h5>
+            </div>
+            <div class="modal-body text-center">
+                
+                <h2 style="color: red;"> ARE YOU SURE ? </h2><br>
+                <p class="text-muted">If Deleted this record can't be recovered</p>
+
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+            <a href="{% url 'administrator:delete_reports' rep.id %}"><button type="button" class="btn btn-outline-danger">Delete</button></a>
+            </div>
+        </div>
+        </div>
+    </div>
+    {% endfor %}
+
+  
+  </div>
+
+
+{% endblock content %}
+
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

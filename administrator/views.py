@@ -11,7 +11,7 @@ from register.models import Patient, Doctor, Radiologist, CustomUser
 from core.models import Appointment as apt
 from core.models import Radreport as rrep
 from core.models import Medreport as mrep
-from core.models import Report as rep
+from core.models import Report as trep
 
 
 #  GLOBAL VARIABLE
@@ -275,7 +275,45 @@ class AddAppointment(LoginRequiredMixin, View):
 
 # REPORTS LIST VIEW
 class Report(LoginRequiredMixin, View):
+    
+    def get(self, request):
+        
+        if request.user.account_type == 'a':
+            
+            rep = trep.objects.all().order_by('-date')
+            return render(request, 'administrator/reports.html', {'list':rep, 'type':request.user.account_type}) 
+            
+        else:
+            messages.success(request, 'Yikes! Seems like you were accessing something you shouldn\'t have ')
+            return redirect('core:landing')
+
+
+
+# REPORT DETAIL
+class Report_detail(LoginRequiredMixin, View):
     pass
+
+
+
+
+# REPORT ADD
+class AddReport(LoginRequiredMixin, View):
+    pass
+
+
+
+
+# DELETE REPORT
+class DeleteReport(LoginRequiredMixin, View):
+    pass
+
+
+
+
+
+
+
+
 
 
 
