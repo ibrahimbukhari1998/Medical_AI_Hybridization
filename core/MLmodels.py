@@ -13,7 +13,20 @@ from tensorflow.compat.v1.logging import INFO, set_verbosity
 import os
 from keras.models import load_model
 import pandas as pd
+from .gradCAM import *
 
+from IPython.display import Image, display
+import matplotlib.cm as cm
+
+
+
+# GLOBAL VARIABLES
+model_builder = keras.applications.xception.Xception
+img_size = (320, 320)
+preprocess_input = keras.applications.xception.preprocess_input
+decode_predictions = keras.applications.xception.decode_predictions
+
+last_conv_layer_name = "conv5_block16_concat"
 
 
 # LABELS
@@ -78,11 +91,22 @@ def Classify(img):
     
     imgdir = str(basedir)+"/media/temp"
     
+    imgfullpath = imgdir+"/"+imgname
+    
     preprocessed_input = load_image(imgname, imgdir, df)
     pred = mcnn.predict(preprocessed_input)
+    
+    # calculating probablity
     max_prob = pred[0].max()
     
     if max_prob >= 0.65:
+        
+        # gradcam saving
+        img_array = preprocess_input(get_img_array(imgfullpath, size=img_size))
+        ind = get_max(pred)
+        heatmap = make_gradcam_heatmap(img_array, mcnn, last_conv_layer_name, pred_index=ind)
+        save_and_display_gradcam(imgfullpath, heatmap, cam_path=imgfullpath)
+        
         
         i=0
         for prob in pred[0]:
